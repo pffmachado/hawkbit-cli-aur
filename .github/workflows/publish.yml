@@ -6,6 +6,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      AUR_PKGNAME: hawkbit-cli
     steps:
       - uses: actions/checkout@v4
 
@@ -23,5 +25,13 @@ jobs:
         run: |
           git config user.name "Paulo Machado"
           git config user.email "pffmachado@gmail.com"
-          git remote add aur ssh://aur@aur.archlinux.org/hawkbit-cli.git
-          git push aur HEAD:master
+          git clone "ssh://aur@aur.archlinux.org/${AUR_PKGNAME}.git" aur-repo
+          cp PKGBUILD .SRCINFO aur-repo/
+          cd aur-repo
+          git add PKGBUILD .SRCINFO
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "Update ${AUR_PKGNAME} package from GitHub Actions"
+          git push origin master
