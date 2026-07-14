@@ -11,7 +11,10 @@ jobs:
     steps:
       - name: Install base tooling
         run: |
-          pacman -Syu --noconfirm --needed base-devel git python python-build python-installer python-setuptools python-wheel
+          pacman -Syu --noconfirm --needed \
+            base-devel git \
+            python python-build python-installer python-setuptools python-wheel \
+            python-httpx python-rich python-typer
       - uses: actions/checkout@v4
       - name: Prepare build user
         run: |
@@ -19,4 +22,4 @@ jobs:
           chown -R builder:builder "${GITHUB_WORKSPACE}"
       - name: Build package
         run: |
-          su builder -c "cd '${GITHUB_WORKSPACE}' && makepkg --syncdeps --noconfirm --cleanbuild --noprogressbar"
+          su builder -c "cd '${GITHUB_WORKSPACE}' && makepkg --nodeps --cleanbuild --noprogressbar"
