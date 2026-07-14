@@ -23,11 +23,14 @@ jobs:
 
       - name: Push package to AUR
         run: |
-          git config user.name "Paulo Machado"
-          git config user.email "pffmachado@gmail.com"
+          set -euxo pipefail
+          ssh -T aur@aur.archlinux.org || true
+          git ls-remote "ssh://aur@aur.archlinux.org/${AUR_PKGNAME}.git"
           git clone "ssh://aur@aur.archlinux.org/${AUR_PKGNAME}.git" aur-repo
           cp PKGBUILD .SRCINFO aur-repo/
           cd aur-repo
+          git config user.name "Paulo Machado"
+          git config user.email "pffmachado@gmail.com"
           git add PKGBUILD .SRCINFO
           if git diff --cached --quiet; then
             echo "No changes to publish."
